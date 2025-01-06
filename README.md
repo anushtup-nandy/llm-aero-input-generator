@@ -132,6 +132,85 @@ This class encapsulates the core functionality of the script.
     *   An output textbox to display the generated Aero-F input file.
     *   A title and description for the application.
 
+
+## Sample Output:
+```
+aero-f
+under Problem {
+  Type = NavierStokes;
+  Mode = Steady;
+  NonDimensional = True;
+}
+
+under Input {
+  Prefix = "data/";
+  Geometry = creo.msh;
+  Decomposition = "creo.dec";
+  CpuMap = "creo.4cpu";
+  ReynoldsNumber = 200;
+}
+
+under Output {
+  under Postpro {
+    Prefix = "result/";
+    Residual = "creo.res";
+    Force = "creo.lift";
+    Mach = "creo.mach";
+    Frequency = 0;
+  }
+  under Restart {
+    Prefix = "result/";
+    Solution = "creo.sol";
+    RestartData = "creo.rst";
+    Frequency = 0;
+  }
+}
+
+under Equations {
+  Type = NavierStokes;
+  Compressible = True;
+}
+
+under BoundaryConditions {
+  under Inlet {
+    Mach = 0.4; # Mach number
+    Alpha = 0.0;
+    Beta = 0.0;
+  }
+}
+
+under Space {
+  under NavierStokes {
+    Reconstruction = Quadratic;
+    Gradient = Galerkin;
+  }
+}
+
+under Time {
+  MaxIts = 10;
+  Eps = 1.e-6;
+  Cfl0 = 10.0;
+  CflMax = 1.e99;
+  Ser = 1.0;
+  under Implicit {
+    MatrixVectorProduct = FiniteDifference;
+    under Newton {
+      MaxIts = 1;
+      under LinearSolver {
+        under NavierStokes {
+          Type = Gmres;
+          MaxIts = 30;
+          KrylovVectors = 30;
+          Eps = 0.05;
+          Preconditioner.Type = Ras;
+        }
+      }
+    }
+  }
+}
+
+```
+
 ## Future Improvements
 
 1. **Enhanced HTML Parsing:** Improve the `parse_html` function to extract more structural information from the documentation, such as parameter dependencies and constraints.
